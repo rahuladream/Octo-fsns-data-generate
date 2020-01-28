@@ -33,3 +33,8 @@ generated subset are discarded. Each subset thereby has a disjoint set of truth 
 7. All images for which the truth string included a character outside of the chosen encoding set, or
 for which the encoded label length exceeded the maximum of 37, were discarded. The character
 set to be handled is thus carefully controlled.
+
+
+## What we need to take care while creating
+
+![Example proto in the TFRecords File](src/FSNS_format.jpg)
