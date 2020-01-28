@@ -10,6 +10,8 @@ Main moto to convert tf_convert from fsns record file
 """
 
 dictionary_path = 'dict_classes.txt'
+image_path      = 'data/*/*.jpg'
+label_path      = 'data/*/*.txt'
 
 def encoded_utf8_string(text, length, dic, null_char_id=5462):
     """
@@ -36,3 +38,43 @@ with open(dictionary_path, encoding="utf8") as dict_file:
         (key, value) = line.strip.split('\t')
         dict_values[value] = int(key)
 print(dict_values)
+
+addrs_image = glob.glob(image_path)
+addrs_label = glob.glob(label_path)
+print(" address image len {} , address label len {}".format(len(addrs_image), len(addrs_label)))
+
+tfrecord_writer  = tf.python_io.TFRecordWriter("tfexample_train") 
+
+for j in range(0,int(len(addrs_image))):
+    print('Train data: {}/{}'.format(j,int(len(addrs_image))))
+    sys.stdout.flush()
+
+    img = Image.open(addrs_image[j])
+
+    img = img.resize((600, 150), Image.ANTIALIAS)
+    np_data = np.array(img)
+    image_data = img.tobytes()
+    for text in open(addrs_label[j], encoding="utf"):
+                 char_ids_padded, char_ids_unpadded = encode_utf8_string(
+                            text=text,
+                            dic=dict,
+                            length=37,
+                            null_char_id=5462)
+
+
+
+    example = tf.train.Example(features=tf.train.Features(
+                        feature={
+                            'image/encoded': _bytes_feature(image_data),
+                            'image/format': _bytes_feature(b"raw"),
+                            'image/width': _int64_feature([np_data.shape[1]]),
+                            'image/orig_width': _int64_feature([np_data.shape[1]]),
+                            'image/class': _int64_feature(char_ids_padded),
+                            'image/unpadded_class': _int64_feature(char_ids_unpadded),
+                            'image/text': _bytes_feature(bytes(text, 'utf-8')),
+                        }
+                    ))
+    tfrecord_writer.write(example.SerializeToString())
+tfrecord_writer.close()
+
+sys.stdout.flush()
