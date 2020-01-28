@@ -13,18 +13,20 @@ dictionary_path = 'dict_classes.txt'
 image_path      = 'data/*/*.jpg'
 label_path      = 'data/*/*.txt'
 
-def encoded_utf8_string(text, length, dic, null_char_id=5462):
+
+def encode_utf8_string(text, length, dic, null_char_id=5462):
     """
     Encode the string and also take care of null characters
     """
-    char_ids_padded         = [null_char_id] * length
-    char_ids_unpadded       = [null_char_id] * length(text)
+    char_ids_padded            = [null_char_id]*length
+    char_ids_unpadded          = [null_char_id]*len(text)
     for i in range(len(text)):
-        hash_id             = dic[text[i]]
-        char_ids_padded[i]  = hash_id
-        char_ids_unpadded[i]= hash_id
+        hash_id              = dic[text[i]]
+        char_ids_padded[i]   = hash_id
+        char_ids_unpadded[i] = hash_id
 
     return char_ids_padded, char_ids_unpadded
+
 
 def _bytes_feature(value):
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
@@ -49,11 +51,10 @@ for j in range(0,int(len(addrs_image))):
     print('Train data: {}/{}'.format(j,int(len(addrs_image))))
     sys.stdout.flush()
 
-    img = Image.open(addrs_image[j])
-
-    img = img.resize((600, 150), Image.ANTIALIAS)
-    np_data = np.array(img)
-    image_data = img.tobytes()
+    img             = Image.open(addrs_image[j])
+    img             = img.resize((600, 150), Image.ANTIALIAS)
+    np_data         = np.array(img)
+    image_data      = img.tobytes()
     for text in open(addrs_label[j], encoding="utf"):
                  char_ids_padded, char_ids_unpadded = encode_utf8_string(
                             text=text,
@@ -65,13 +66,13 @@ for j in range(0,int(len(addrs_image))):
 
     example = tf.train.Example(features=tf.train.Features(
                         feature={
-                            'image/encoded': _bytes_feature(image_data),
-                            'image/format': _bytes_feature(b"raw"),
-                            'image/width': _int64_feature([np_data.shape[1]]),
-                            'image/orig_width': _int64_feature([np_data.shape[1]]),
-                            'image/class': _int64_feature(char_ids_padded),
+                            'image/encoded'       : _bytes_feature(image_data),
+                            'image/format'        : _bytes_feature(b"raw"),
+                            'image/width'         : _int64_feature([np_data.shape[1]]),
+                            'image/orig_width'    : _int64_feature([np_data.shape[1]]),
+                            'image/class'         : _int64_feature(char_ids_padded),
                             'image/unpadded_class': _int64_feature(char_ids_unpadded),
-                            'image/text': _bytes_feature(bytes(text, 'utf-8')),
+                            'image/text'          : _bytes_feature(bytes(text, 'utf-8')),
                         }
                     ))
     tfrecord_writer.write(example.SerializeToString())
