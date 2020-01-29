@@ -4,30 +4,30 @@ This code is forked from Attention chinease ocr
 
 import datasets.fsns as fsns
 
-DEFAULT_DATASET_DIR = 'datasets/data/fsns/train'
+DEFAULT_DATASET_DIR = 'data/*/*'
 
 DEFAULT_CONFIG = {
     'name':
         'MYDATASET',
     'splits': {
         'train': {
-            'size': 1800000,
+            'size': 8,
             'pattern': 'tfexample_train*'
         },
         'test': {
-            'size': 0,
+            'size': 2,
             'pattern': 'tfexample_test*'
         }
     },
     'charset_filename':
-        'dic.txt',
+        'dict_classes.txt',
     'image_shape': (150, 600, 3),
     'num_of_views':
         1,
     'max_sequence_length':
         37,
     'null_code':
-        5462,
+        64,
     'items_to_descriptions': {
         'image':
             'A [150 x 600 x 3] color image.',

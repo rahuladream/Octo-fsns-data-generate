@@ -10,17 +10,18 @@ Main moto to convert tf_convert from fsns record file
 """
 
 dictionary_path = 'dict_classes.txt'
-image_path      = 'data/*/*.jpg'
+image_path      = 'data/*/*.png'
 label_path      = 'data/*/*.txt'
 
 
-def encode_utf8_string(text, length, dic, null_char_id=5462):
+def encode_utf8_string(text, length, dic, null_char_id=64):
     """
     Encode the string and also take care of null characters
     """
     char_ids_padded            = [null_char_id]*length
     char_ids_unpadded          = [null_char_id]*len(text)
     for i in range(len(text)):
+        print(text[i])
         hash_id              = dic[text[i]]
         char_ids_padded[i]   = hash_id
         char_ids_unpadded[i] = hash_id
@@ -34,18 +35,21 @@ def _bytes_feature(value):
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
 
-dict_values = {}
-with open(dictionary_path, encoding="utf8") as dict_file:
+dict = {}
+with open('dict_classes.txt', encoding="utf") as dict_file:
     for line in dict_file:
-        (key, value) = line.strip.split('\t')
-        dict_values[value] = int(key)
-print(dict_values)
+        print(line)
+        (key, value) = line.strip().split('\t')
+        dict[value] = int(key)
+print((dict))
 
 addrs_image = glob.glob(image_path)
+print(addrs_image)
 addrs_label = glob.glob(label_path)
+print(addrs_label)
 print(" address image len {} , address label len {}".format(len(addrs_image), len(addrs_label)))
 
-tfrecord_writer  = tf.python_io.TFRecordWriter("tfexample_train") 
+tfrecord_writer  = tf.io.TFRecordWriter("tfexample_train.tfrecord") 
 
 for j in range(0,int(len(addrs_image))):
     print('Train data: {}/{}'.format(j,int(len(addrs_image))))
