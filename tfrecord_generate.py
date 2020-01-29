@@ -79,3 +79,11 @@ for j in range(0,int(len(addrs_image))):
 tfrecord_writer.close()
 
 sys.stdout.flush()
+
+
+
+
+
+
+
+
